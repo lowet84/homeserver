@@ -1,0 +1,89 @@
+version: '2'
+
+services:
+  plex:
+    labels:
+     - traefik.frontend.entryPoints=http
+    extends:
+      file: mediaserver/mediaserver.yml
+      service: plex
+
+  sabnzbd:
+    labels:
+     - traefik.frontend.entryPoints=http
+    extends:
+      file: mediaserver/mediaserver.yml
+      service: sabnzbd
+  
+  deluge:
+    labels:
+     - traefik.frontend.entryPoints=http
+    extends:
+      file: mediaserver/mediaserver.yml
+      service: deluge
+
+  sonarr:
+    labels:
+     - traefik.frontend.entryPoints=http
+    extends:
+      file: mediaserver/mediaserver.yml
+      service: sonarr
+
+  traefik:
+    image: lowet84/traefik
+    restart: always
+    ports:
+      - 443:443
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /volumes/traefik:/etc/ssl
+
+  mysql:
+    extends:
+      file: guacamole/guacamole.yml
+      service: mysql
+
+  guacamole-init:
+    extends:
+      file: guacamole/guacamole.yml
+      service: mysql-init
+  
+  guacamole:
+    labels:
+     - traefik.frontend.entryPoints=https
+    extends:
+      file: guacamole/guacamole.yml
+      service: guacamole
+
+  guacacd:
+    extends:
+      file: guacamole/guacamole.yml
+      service: guacd
+
+  acme-nginx-guacamole:
+    image: lowet84/acme-nginx
+    volumes:
+      - /volumes/acme:/usr/share/nginx/html
+    ports: 
+      - 80
+    labels:
+      - traefik.frontend.entryPoints=http
+      - traefik.backend=acme-nginx
+      - traefik.frontend.passHostHeader=true
+      - traefik.port=80
+      - traefik.frontend.rule=Host:guacamole.fredriklowenhamn.se;PathPrefix:/.well-known/acme-challenge/
+
+#  acme-nginx:
+#    image: lowet84/acme-nginx
+#    volumes:
+#      - /volumes/acme:/usr/share/nginx/html
+#    ports:
+#      - 80
+#    labels:
+#      - traefik.frontend.entryPoints=http
+#      - traefik.backend=acme-nginx
+#      - traefik.frontend.passHostHeader=true
+#      - traefik.port=80
+#      - traefik.frontend.rule=Host:fredriklowenhamn.se;PathPrefix:/.well-known/acme-challenge/
