@@ -3,6 +3,7 @@ version: '2'
 services:
   hubot:
     image: lowet84/hubot
+    build: ./
     volumes:
      - /volumes/hubot:/app/scripts
      - /etc/localtime:/etc/localtime:ro
