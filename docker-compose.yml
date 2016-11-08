@@ -57,10 +57,22 @@ services:
       file: guacamole/guacamole.yml
       service: guacamole
 
-  guacacd:
+  guacd:
     extends:
       file: guacamole/guacamole.yml
       service: guacd
+
+  hubot:
+    labels:
+     - traefik.frontend.entryPoints=https
+    extends:
+      file: hubot/hubot.yml
+      service: hubot
+   
+  redis:
+    extends:
+      file: hubot/hubot.yml
+      service: redis
 
   acme-nginx-guacamole:
     image: lowet84/acme-nginx
@@ -75,15 +87,15 @@ services:
       - traefik.port=80
       - traefik.frontend.rule=Host:guacamole.fredriklowenhamn.se;PathPrefix:/.well-known/acme-challenge/
 
-#  acme-nginx:
-#    image: lowet84/acme-nginx
-#    volumes:
-#      - /volumes/acme:/usr/share/nginx/html
-#    ports:
-#      - 80
-#    labels:
-#      - traefik.frontend.entryPoints=http
-#      - traefik.backend=acme-nginx
-#      - traefik.frontend.passHostHeader=true
-#      - traefik.port=80
-#      - traefik.frontend.rule=Host:fredriklowenhamn.se;PathPrefix:/.well-known/acme-challenge/
+  acme-nginx-hubot:
+    image: lowet84/acme-nginx
+    volumes:
+      - /volumes/acme:/usr/share/nginx/html
+    ports:
+      - 80
+    labels:
+      - traefik.frontend.entryPoints=http
+      - traefik.backend=acme-nginx
+      - traefik.frontend.passHostHeader=true
+      - traefik.port=80
+      - traefik.frontend.rule=Host:hubot.fredriklowenhamn.se;PathPrefix:/.well-known/acme-challenge/
