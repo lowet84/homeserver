@@ -13,3 +13,8 @@ USER docker
 RUN yes | yo hubot --defaults && \
     npm install --save hubot-messenger-bot hubot-reload-scripts
 ADD external-scripts.json /app/external-scripts.json
+ADD package.json /app/package.json
+
+ADD start.sh start.sh
+CMD sh start.sh
+#CMD ./bin/hubot -a messenger-bot --name bot

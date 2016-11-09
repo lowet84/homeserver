@@ -5,7 +5,6 @@ services:
     image: lowet84/hubot
     build: ./
     volumes:
-     - /volumes/hubot:/app/scripts
      - /etc/localtime:/etc/localtime:ro
     ports:
      - 8089:8080
@@ -15,7 +14,6 @@ services:
      - HUBOT_LOG_LEVEL=debug
      - MESSENGER_VERIFY_TOKEN=$MESSENGER_VERIFY_TOKEN
      - MESSENGER_ACCESS_TOKEN=$MESSENGER_ACCESS_TOKEN
-    command: ./bin/hubot -a messenger-bot --name bot
     labels:
      - traefik.backend=hubot
      - traefik.frontend.passHostHeader=true
@@ -23,6 +21,8 @@ services:
      - traefik.frontend.rule=Host:hubot.fredriklowenhamn.se
   redis:
     image: redis
+    ports:
+     - 6379:6379
     volumes:
      - /volumes/redis:/data
      - /etc/localtime:/etc/localtime:ro
